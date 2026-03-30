@@ -1,0 +1,16 @@
+# Pokemon Showdown server
+pokemon-showdown/
+
+# Python virtual environment
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# macOS
+.DS_Store
+
+# Environment variables
+.env
