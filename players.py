@@ -7,11 +7,17 @@ GEN_DATA = GenData.from_gen(9)
  
  
 class TrackedRandomPlayer(MetricsMixin, RandomPlayer):
-    pass
+    def choose_move(self, battle):
+        chosen_order = super().choose_move(battle)
+        self._track_move_selection(battle, chosen_order)
+        return chosen_order
  
  
 class TrackedHeuristicsPlayer(MetricsMixin, SimpleHeuristicsPlayer):
-    pass
+    def choose_move(self, battle):
+        chosen_order = super().choose_move(battle)
+        self._track_move_selection(battle, chosen_order)
+        return chosen_order
  
  
 class MaxDamagePlayer(MetricsMixin, Player):
@@ -29,9 +35,12 @@ class MaxDamagePlayer(MetricsMixin, Player):
                 )
  
             best_move = max(battle.available_moves, key=move_score)
-            return self.create_order(best_move)
+            chosen_order = self.create_order(best_move)
         else:
-            return self.choose_random_move(battle)
+            chosen_order = self.choose_random_move(battle)
+        
+        self._track_move_selection(battle, chosen_order)
+        return chosen_order
  
  
 class LookaheadPlayer(MetricsMixin, Player):
@@ -43,10 +52,14 @@ class LookaheadPlayer(MetricsMixin, Player):
  
     def choose_move(self, battle):
         if not battle.available_moves and not battle.available_switches:
-            return self.choose_random_move(battle)
-        state = self._snapshot(battle)
-        best_move = self._best_move(state, battle)
-        return self.create_order(best_move)
+            chosen_order = self.choose_random_move(battle)
+        else:
+            state = self._snapshot(battle)
+            best_move = self._best_move(state, battle)
+            chosen_order = self.create_order(best_move)
+        
+        self._track_move_selection(battle, chosen_order)
+        return chosen_order
  
     def _best_move(self, state, battle):
         best_val = float("-inf")
