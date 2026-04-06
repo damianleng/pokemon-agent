@@ -95,17 +95,17 @@ async def main():
     ]
     
     significant_results = []
-    for matchup, wins in battle_results:
-        is_significant = analyze_statistical_significance(wins, n - wins, n)
+    for matchup, w in battle_results:
+        is_significant = analyze_statistical_significance(w, n - w, n)
         if is_significant:
-            win_rate = wins / n * 100
-            significant_results.append((matchup, win_rate, wins))
-    
+            win_rate = w / n * 100
+            significant_results.append((matchup, win_rate, w))
+
     if significant_results:
         print("Statistically significant performance differences detected:")
-        for matchup, win_rate, wins in significant_results:
+        for matchup, win_rate, w in significant_results:
             advantage = "Strong" if win_rate > 70 else "Moderate" if win_rate > 60 else "Slight"
-            print(f"  • {matchup}: {advantage} advantage ({wins}/{n} = {win_rate:.1f}%)")
+            print(f"  • {matchup}: {advantage} advantage ({w}/{n} = {win_rate:.1f}%)")
     else:
         print("No statistically significant differences detected.")
         print("Consider increasing sample size (n) for more reliable results.")

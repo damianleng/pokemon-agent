@@ -51,7 +51,7 @@ class LookaheadPlayer(MetricsMixin, Player):
         self._depth = depth
  
     def choose_move(self, battle):
-        if not battle.available_moves and not battle.available_switches:
+        if not battle.available_moves:
             chosen_order = self.choose_random_move(battle)
         else:
             state = self._snapshot(battle)
@@ -70,7 +70,7 @@ class LookaheadPlayer(MetricsMixin, Player):
             if val > best_val:
                 best_val = val
                 best = move
-        return best if best is not None else battle.available_moves[0]
+        return best
  
     def _expectimax(self, state, depth, is_agent_turn):
         if depth == 0 or state["our_hp"] <= 0 or state["opp_hp"] <= 0:
