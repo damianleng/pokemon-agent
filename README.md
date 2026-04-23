@@ -47,7 +47,7 @@ Make sure the Showdown server is running, then:
 
 ```bash
 source venv/bin/activate
-python3 test_connection.py
+python3 main.py
 ```
 
 ---
@@ -56,7 +56,7 @@ python3 test_connection.py
 
 ```
 pokemon/
-├── test_connection.py       # AI agents and battle simulation
+├── main.py       # AI agents and battle simulation
 ├── pokemon-showdown/        # Local Showdown server (git ignored)
 ├── venv/                    # Python virtual environment (git ignored)
 └── README.md

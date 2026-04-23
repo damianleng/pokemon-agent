@@ -1,4 +1,4 @@
 poke-env==0.12.1
 numpy==2.4.3
-matplotlib
-scipy
+matplotlib==3.10.8
+scipy==1.17.1

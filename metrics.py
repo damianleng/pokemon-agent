@@ -67,10 +67,11 @@ def analyze_move_preferences(move_data):
         }
     
     total_moves = len(move_data)
+    switches = sum(1 for m in move_data if m.get('is_switch', False))
+    # Only count entries that are actual moves (category is set), not switches
     offensive = sum(1 for m in move_data if m.get('category') == 'offensive')
     defensive = sum(1 for m in move_data if m.get('category') == 'defensive')
     status = sum(1 for m in move_data if m.get('category') == 'status')
-    switches = sum(1 for m in move_data if m.get('is_switch', False))
     
     effective_counts = defaultdict(int)
     switch_turns = []
@@ -137,22 +138,26 @@ class MetricsMixin:
         if not hasattr(self, '_move_data'):
             return
             
+        from poke_env.battle.move import Move
+        from poke_env.battle.pokemon import Pokemon as PokemonObj
+        order = getattr(chosen_order, 'order', None)
+        is_switch = isinstance(order, PokemonObj)
         move_info = {
             'turn': battle.turn,
-            'is_switch': hasattr(chosen_order, 'pokemon') and chosen_order.pokemon is not None,
-            'category': 'status',  # Default
+            'is_switch': is_switch,
+            'category': None,  # Set below for moves only; switches have no category
             'effectiveness': 1.0   # Default neutral
         }
-        
+
         # If it's a move (not switch)
-        if hasattr(chosen_order, 'move') and chosen_order.move is not None:
-            move = chosen_order.move
+        if isinstance(order, Move):
+            move = order
             opponent_pokemon = battle.opponent_active_pokemon
             
             # Categorize move type
             if move.base_power > 0:
                 move_info['category'] = 'offensive'
-            elif move.heal > 0 or any(boost > 0 for boost in move.boosts.values()) if hasattr(move, 'boosts') and move.boosts else False:
+            elif move.heal > 0 or (hasattr(move, 'boosts') and move.boosts and any(boost > 0 for boost in move.boosts.values())):
                 move_info['category'] = 'defensive'
             else:
                 move_info['category'] = 'status'
@@ -160,8 +165,8 @@ class MetricsMixin:
             # Calculate type effectiveness if opponent exists
             if opponent_pokemon and hasattr(move, 'type'):
                 try:
-                    from poke_env.data import GenData
-                    gen_data = GenData.from_gen(9)
+                    from poke_env.data import GenData as _GenData
+                    gen_data = _GenData.from_gen(9)
                     effectiveness = move.type.damage_multiplier(
                         opponent_pokemon.type_1,
                         opponent_pokemon.type_2,

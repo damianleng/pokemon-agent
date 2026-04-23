@@ -8,7 +8,8 @@ def print_consistency_analysis(player_name, streaks):
     
     if streaks['current_streak_type']:
         streak_type = streaks['current_streak_type'] 
-        print(f"   Current streak:      {streaks['current_streak']:2d} {streak_type}s")
+        streak_label = "wins" if streak_type == "win" else "losses"
+        print(f"   Current streak:      {streaks['current_streak']:2d} {streak_label}")
     
     print(f"   Average streak:      {streaks['avg_streak_length']:4.1f} battles")
 
